@@ -47,7 +47,7 @@ void FiniteField::init() {
 
 void FiniteField::finalize() {
 	if (logTable != NULL) {
-                delete [] logTable;
+        delete [] logTable;
 		logTable = NULL;
 	}
 	if (expTable != NULL) {

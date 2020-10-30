@@ -19,6 +19,7 @@
 
 #include "BatchEnc.h"
 
+// generate Check packets
 void BatsEncoder::genCheckPkg(){
 //    int packetAndLDNum = packetNum + ldpcNum;
     
@@ -101,10 +102,12 @@ void BatsEncoder::genCheckPkg(){
 void BatsEncoder::setInputPackets(SymbolType *input){
     packets = (SymbolType**)malloc(packetNum*sizeof(SymbolType*));
     
+    // initialize packet
     for (int i = 0; i < packetNum; i++){
         packets[i] = input + i*packetSize;
+        std::cout << (long)packets[i] <<"\n";// test only
     }
-    
+
     if (checkNum <= 0)
         return;
 

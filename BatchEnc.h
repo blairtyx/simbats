@@ -40,9 +40,9 @@ public:
   
     BatsEncoder(int M, SymbolType *input, int K, int T) : BatsBasic(M,K,T) {
         // init batch ID
-        batchID = getSmallestBid();
+        batchID = getSmallestBid(); // return ldpcNum for now
 
-        setInputPackets(input);
+        setInputPackets(input); //
     }
 
     void setInputPackets(SymbolType *input);

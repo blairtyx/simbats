@@ -60,6 +60,7 @@ public:
     int nInact;
     double * rankdist;
 
+    // constructor
     DecoderStatus(int M){
         rankdist = new double[M+1];
     }
@@ -132,6 +133,7 @@ private:
     SimRecoder *simcoder;
 
 public:
+    //constructor
     BATSimulator(int M, int m, int K, int T) : batchSize(M), gf_order(m), packetNum(K), packetSize(T) {
 
         nEncLimit = packetNum / batchSize * 30;
@@ -155,10 +157,13 @@ public:
 
         for (int i = 0; i < packetNum; i++) {
             for (int j = 0; j < packetSize; j++) {
-                input[j + i * packetSize] = psrand->randInt(255);
-                output[j + i * packetSize] = 255;
+                input[j + i * packetSize] = psrand->randInt(255);// generate a random number no larger than 255
+                std::cout << (int)input[j + i * packetSize] << "\t"; // test only
+                output[j + i * packetSize] = 255;// set 255 to all elements
+                std::cout << (int)output[j + i * packetSize] << "\t"; // test only
             }
         }
+        std::cout << "\n"; // test only
 
         encoder = NULL;
         decoder = NULL;
@@ -178,16 +183,19 @@ private:
     void getDegDist() {
         stringstream iss;
 
+        // pass in the pre-defined packets file name
         iss << "simDegreeK" << packetNum << "M" << batchSize << "m" << gf_order << ".txt";
         //    iss << "ddM" << batchSize << "m" << gf_order << "FR.txt";
         ifstream filestr;
 
+        // read from the pre-defined file
         filestr.open(iss.str().c_str());
         if (!filestr) {
             cout << "cannot get degree distribution. File name:" << iss.str().c_str() << "\n";
             return;
         }
 
+        // adding degree distribution from file to degreeDist[]
         // the degree file start with degree 1.
         // degree 0 has probability 0.
         degreeDist[0] = 0.0;
@@ -199,6 +207,7 @@ private:
             D++;
         }
 
+        // rest are all set to 0
         for (int i = D; i < MAX_DEGREE; i++) {
             degreeDist[i] = 0;
         }
@@ -209,11 +218,13 @@ private:
 	void getRankDist() {
         rankDist = new double[batchSize+1];
 
+        // initialize with all zero for rankDist[]
 		for (int i = 0; i < batchSize + 1; i++)
 			rankDist[i] = 0;
 
         stringstream iss;
 
+        // read from pre-defined file of Rank distribution
         iss << "simRankDistM" << batchSize << "m" << gf_order << ".txt";
 
 		ifstream filestr;
@@ -326,8 +337,10 @@ public:
 
             for (int i = 0; i < batchSize; i++) {
                 saveIDInPacket(batch[i], &id);
-            }
+                std::cout << batch[i];// test
 
+            }
+            
             timeUsed.encoding.end();
 
 			/* Simulation of recoding */
@@ -394,7 +407,7 @@ int main(int argc, char* argv[]) {
         case 1:
             batchSize = 32; // 16, 32, 64
             packetNum = 1600;
-            iterationNum = 10;
+            iterationNum = 1;
             break;
         case 4:
             batchSize = atoi(argv[1]);
@@ -408,8 +421,13 @@ int main(int argc, char* argv[]) {
 
     BATSimulator sim(batchSize, gf_order, packetNum, packetSize);
 
-    cout << "Simulation starts with " << "M = " << batchSize << ", q = 2^" << gf_order << ", K = " << packetNum << ", T = " << packetSize << endl;
+    cout << "Simulation starts with " 
+         << "M = " << batchSize 
+         << ", q = 2^" << gf_order 
+         << ", K = " << packetNum 
+         << ", T = " << packetSize << endl;
 
+    // more parameters
     int iter = 0;
 
     int errIdx[iterationNum];
@@ -420,22 +438,25 @@ int main(int argc, char* argv[]) {
     DecoderStatus ds(batchSize);
     double accuRankDist[batchSize + 1];
 
+    // initialize accuRankDist with 0
     for (int i = 0; i < batchSize + 1; i++) {
         accuRankDist[i] = 0;
     }
 
+    // output parameters
     ofstream output;
     stringstream iss;
     time_t t = time(0);
     struct tm * now = localtime(&t);
 
+    // output file name
     iss << "simK" << packetNum << "M" << batchSize << "m" << gf_order << "(" << now->tm_mon + 1 << now->tm_mday << now->tm_hour << now->tm_min << now->tm_sec << ").txt";
 
     output.open(iss.str().c_str());
 
     while (iter < iterationNum) {
         cout << "===== " << iter << " =====" << endl;
-        sim.runOnce(timeUsed, ds);
+        sim.runOnce(timeUsed, ds);// main simulation process
         iter++;
 
         output << ds.nTrans << " " << ds.nReceive << " " << ds.nSave << " " << ds.nInact << " " << ds.nError << " ";
@@ -463,8 +484,8 @@ int main(int argc, char* argv[]) {
 
 
         for (int i = 0; i <= batchSize; i++) {
-            output << ds.rankdist[i] << " ";
-            cout << ds.rankdist[i] << " ";
+            output << ds.rankdist[i] << " ";// to file
+            cout << ds.rankdist[i] << " ";// terminal
             Erk += i * ds.rankdist[i];
             accuRankDist[i] += ds.rankdist[i];
         }

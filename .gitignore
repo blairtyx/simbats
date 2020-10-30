@@ -22,3 +22,9 @@
 
 # Scons
 *.dblite
+
+# text files
+*.txt
+
+# vscode
+/.vscode
