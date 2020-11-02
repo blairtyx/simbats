@@ -393,10 +393,10 @@ public:
 int main(int argc, char* argv[]) {
 
     // set parameters
-    int batchSize;
-    int gf_order = 8; // 1, 2, 4, 8
-    int packetNum;
-    int packetSize = 1; //In Bytes
+    int batchSize;// M, number of decoded packets
+    int gf_order = 8; // 1, 2, 4, 8 , m, finite field order
+    int packetNum; // K, related to the information source size
+    int packetSize = 1; //In Bytes, size of each packets
     //int packetSizeInSymbol = packetSize * SymbolSize / gf_order;
 
     int iterationNum;
@@ -406,7 +406,7 @@ int main(int argc, char* argv[]) {
     switch(argc) {
         case 1:
             batchSize = 32; // 16, 32, 64
-            packetNum = 1600;
+            packetNum = 16000;
             iterationNum = 1;
             break;
         case 4:
